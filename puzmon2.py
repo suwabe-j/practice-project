@@ -1,11 +1,10 @@
 """
 作成日：2026年3月8日（日）
-作成者：諏訪部
+作成目的：Pythonの演習
+書籍：すっきりわかるPython入門２
 """
 
-#インポート
-
-# 記号
+# 記号のディクショナリ
 ELEMENT_SYMBOLS = {
         "火":"$",
         "水":"~",
@@ -15,7 +14,7 @@ ELEMENT_SYMBOLS = {
         "無":""
         }
 
-# カラー
+# 色のディクショナリ
 ELEMENT_COLORS = {
         "火":1,
         "水":6,
@@ -29,11 +28,11 @@ ELEMENT_COLORS = {
 def main():
     # タイトルの表示
     print("＊＊＊Puzzle & Mosters＊＊＊")
-    # ５体のモンスター
+    # ５体のモンスター情報を入れるリストの作成
     enemy_list = list()
-    # ４体味方モンスター
+    # ４体味方モンスターのリスト作成
     party_list = list()
-    # モンスター作成
+    # 各モンスターを作成し、リストへ格納
     slime={
             "name":"スライム",
             "hp":100,
@@ -83,7 +82,8 @@ def main():
             "dp":20
             } 
     enemy_list.append(doragon)
-    # ４体の味方モンスター作成
+
+    # ４体の味方モンスター作成し、リストへ格納
     seiryuu={
             "name":"青龍",
             "hp":150,
@@ -126,7 +126,9 @@ def main():
 
     # バトルを開始して、倒したモンスターの個数を表示する
     player_name = input("プレイヤー名を入力してください＞＞")
+    # パーティーの様々な情報をリストに入れる
     party_list = organize_party(player_name , party_list)
+    # 戦いの勝利数を格納
     monster_endnumber = go_dungeon(party_list , enemy_list)
     
     # 倒したモンスターの体数に応じて、クリアかゲームーバーかを表示する
@@ -163,10 +165,11 @@ def go_dungeon(party_dict,enemy_list):
 # do_battle関数（１回のバトル開始から終了までの責任を持つ）
 def do_battle(party_dict , enemy):
 
-    # モンスターの名前を表示する関数＆リターンが無いので分解する
+    # モンスターの名前を表示
     print_monster_name(enemy)
     print("が現れた！")
 
+    # パーティーや敵の残り体力次第で、攻撃ターンを続ける
     while party_dict['HP'] > 0:
         on_player_turn(party_dict , enemy)
         if enemy['hp'] > 0:
@@ -183,18 +186,16 @@ def do_battle(party_dict , enemy):
     else:
         return 0
 
-# print_monster_name関数
+# モンスターの名前を表示する関数
 def print_monster_name(monster):
     # monsterはディクショナリで受け取る
-    # モンスターの名前をキーnameで取得する
     symbol = ELEMENT_SYMBOLS[ monster["element"] ]
-    
     #色のコードをうけとる
     color = ELEMENT_COLORS[ monster["element"] ]
     # モンスター名を表示
     print(f"\033[{color}m{symbol}{monster['name']}{symbol}\033[0m" , end = '')
 
-#引数で渡された味方モンスターでパーティーを編成して返す
+# 引数で渡された味方モンスターでパーティーを編成して返す関数
 def organize_party(player_name , party_list):
     # 味方モンスターのHP合計値と防御力の平均を求める
     sum_hp = 0
@@ -215,14 +216,15 @@ def organize_party(player_name , party_list):
 
     return party_info
 
-# 味方モンスターの情報を表示する
+# 味方モンスターの情報を表示する関数
 def show_party(party_dict):
     party_monster_list = party_dict["味方モンスター"]
+    # 味方モンスターの情報をリストから出して、情報表示
     for party_monster in party_monster_list:
         print_monster_name(party_monster)
         print(f"　HP＝{party_monster['hp']}　攻撃＝{party_monster['ap']}　防御＝{party_monster['dp']}")
 
-# プレイヤーのターンの流れに責任を持つ
+# プレイヤーの攻撃ターンを実施する関数
 def on_player_turn(party_dict , enemy):
     #「【〇〇のターン】（HP＝▲▲））を表示する」
     print(f"【{party_dict['プレイヤー名']}のターン】（HP＝{party_dict['HP']}）")
@@ -231,7 +233,7 @@ def on_player_turn(party_dict , enemy):
     #敵モンスターのHPからダメージ分の値を減らす
     do_attack(enemy , comand)
 
-# プレイヤーのターンの流れに責任を持つ
+# 敵の攻撃ターンを実施する関数
 def on_enemy_turn(party_dict , enemy):
     #「【〇〇のターン】（HP＝▲▲））を表示する」
     print(f"【{enemy['name']}のターン】（HP＝{enemy['hp']}）")
@@ -240,15 +242,20 @@ def on_enemy_turn(party_dict , enemy):
 
 # プレイヤーによる敵へのダメージを計算する
 def do_attack(enemy , comand):
+    # ランダム関数をインポート
     import random
+
     damage = hash(comand)
     if damage >= 0:
         enemy['hp'] -= int((damage / (2**62)) * (random.uniform(1.1,0.9)))
     else:
         enemy['hp'] += int((damage / (2**62)) * (random.uniform(1.1,0.9)))
-# 敵によるプレーヤーへのダメージを計算する
+
+# 敵によるプレーヤーへのダメージを計算する関数
 def do_enemy_attack(party_dict):
+    # ランダム関数をインポート
     import random
+
     party_dict['HP'] -= int(random.uniform(30,100))
 
 # main関数
